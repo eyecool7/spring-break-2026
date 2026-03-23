@@ -347,7 +347,7 @@ const I18N = {
   ko: {
     title1: '봄방학',
     title2: '재민이 우진이 재윤이<br>숙소 비교',
-    subtitle: '4.2 – 4.4 &middot; 2박3일',
+    subtitle: '4월 2일(목) – 4일(토) &middot; 2박 3일',
     desc: 'Arlington, VA 출발 &middot; 어른 7명 &middot; 강아지 1마리',
     tags: ['테니스', '요리', '보드게임', '캠프파이어', '펫 프렌들리'],
     mapTitle: '위치 한눈에 보기',
@@ -368,7 +368,7 @@ const I18N = {
   en: {
     title1: 'Spring Break',
     title2: 'Jaemin · Woojin · Jaeyoon<br>Accommodation Guide',
-    subtitle: 'Apr 2 – 4 &middot; 2 Nights',
+    subtitle: 'Thu, Apr 2 – Sat, Apr 4 &middot; 2 Nights',
     desc: 'From Arlington, VA &middot; 7 Adults &middot; 1 Dog',
     tags: ['Tennis', 'Cooking', 'Board Games', 'Campfire', 'Pet Friendly'],
     mapTitle: 'Location Overview',
@@ -608,7 +608,10 @@ function renderApp() {
         <div class="flex flex-col lg:flex-row lg:items-end lg:gap-10">
           <!-- 왼쪽: 타이틀 -->
           <div class="flex-1 min-w-0">
-            <p class="text-white/30 text-[13px] tracking-[0.15em] uppercase mb-5">${t('subtitle')}</p>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-400/20 backdrop-blur-sm mb-5">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span class="text-amber-300/90 text-[13px] font-semibold tracking-wide">${t('subtitle')}</span>
+            </div>
             <h1 class="text-[44px] md:text-[64px] font-bold text-white leading-[1.05] tracking-tight mb-6">${t('title1')}<br>${t('title2')}</h1>
             <p class="text-white/35 text-[15px] mb-6">${t('desc')}</p>
             <div class="flex flex-wrap gap-2 mb-8 lg:mb-0">
@@ -663,14 +666,18 @@ function initMap() {
   mapEl.innerHTML = '';
   mapEl._leaflet_id = null;
 
-  const map = L.map('map', { scrollWheelZoom: false }).setView([38.85, -77.95], 8);
+  const map = L.map('map', { scrollWheelZoom: false });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
     maxZoom: 19
   }).addTo(map);
 
-  L.marker([38.88, -77.10], {
+  // 모든 마커 좌표 수집 (fitBounds용)
+  const homeLat = 38.88, homeLng = -77.10;
+  const allPoints = [[homeLat, homeLng]];
+
+  L.marker([homeLat, homeLng], {
     icon: L.divIcon({
       className: '',
       html: '<div style="width:32px;height:32px;border-radius:50%;background:#3b82f6;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,0.3);">🏠</div>',
@@ -682,6 +689,7 @@ function initMap() {
   ACCOMMODATIONS.filter(a => a.lat && a.lng).forEach(a => {
     const bg = a.rank === 1 ? '#f59e0b' : '#ef4444';
     const textColor = a.rank === 1 ? '#000' : '#fff';
+    allPoints.push([a.lat, a.lng]);
     L.marker([a.lat, a.lng], {
       icon: L.divIcon({
         className: '',
@@ -691,6 +699,11 @@ function initMap() {
       })
     }).addTo(map).bindPopup(`<b>${a.rank}. ${a.name}</b><br>${a.location}<br>${a.distance} · $${a.priceLow}`);
   });
+
+  // fitBounds로 모든 마커가 보이도록 자동 조정
+  if (allPoints.length > 0) {
+    map.fitBounds(allPoints, { padding: [30, 30], maxZoom: 9 });
+  }
 }
 
 function initCarousels() {
