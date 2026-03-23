@@ -763,7 +763,7 @@ function initMap() {
   mapEl.innerHTML = '';
   mapEl._leaflet_id = null;
 
-  const map = L.map('map', { scrollWheelZoom: false });
+  const map = L.map('map', { scrollWheelZoom: false, center: [38.88, -77.10], zoom: 8 });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -832,8 +832,8 @@ function initMap() {
     }).addTo(map);
   });
 
-  // 집 중심, 줌 7로 모든 마커 + 권역 라벨 표시
-  map.setView([homeLat, homeLng], 7);
+  // 줌 8로 리셋 (권역 라벨 포함되도록)
+  map.setView([38.88, -77.10], 8);
 }
 
 function initCarousels() {
