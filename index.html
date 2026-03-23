@@ -57,8 +57,6 @@
     }
     .gallery-carousel::-webkit-scrollbar { display: none; }
     .gallery-carousel { scrollbar-width: none; }
-    .heart-icon { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.15s ease, fill 0.15s ease; }
-    .heart-btn:active .heart-icon { transform: scale(0.85); }
   </style>
 </head>
 <body class="bg-black text-white font-sans min-h-screen">
@@ -74,8 +72,9 @@
 // ╚══════════════════════════════════════════════════════════╝
 const ACCOMMODATIONS = [
   {
-    id: 100, rank: 4,
+    id: 100, rank: 3,
     lat: 39.627, lng: -78.225,
+    region: "Berkeley Springs 권역",
     name: "Pet-Friendly Cabin w/ Hot Tub + Firepit",
     source: "Airbnb",
     location: "Berkeley Springs, WV",
@@ -97,8 +96,8 @@ const ACCOMMODATIONS = [
       "images/cabin100_07.png"
     ],
     url: "https://www.airbnb.com/rooms/1091621448615450481?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
-    amenities: ["최대 8인", "3BR/3BA", "핫텁", "파이어핏", "BBQ 그릴", "고속 WiFi", "스마트TV", "반려동물 가능", "하이킹 근접", "커뮤니티 테니스코트"],
-    criteria: { tennis: "partial", cooking: "partial", games: "no", campfire: "yes", pet: "yes" },
+    amenities: ["3BR/3BA", "식탁크기 6인", "파이어핏", "BBQ 그릴", "핫텁", "펫 프렌들리", "커뮤니티 테니스코트·수영장 (차로 2분)", "풀키친", "Cacapon State Park 하이킹 (차로 10분)", "Berkeley Springs 마을 (차로 5분)"],
+    criteria: { tennis: "yes", dining: "partial", games: "no", firepit: "yes", grill: "yes", hottub: "yes", sauna: "no", pet: "yes" },
     review: {
       rating: "4.99 / 68개 리뷰",
       text: "아이와 강아지를 데리고 머물기에 완벽한 곳이었어요. 아늑하고 편안한 주말을 보냈습니다. 근처 Berkeley Springs 마을에서 맛있는 식사도 하고, 차로 10분 거리의 Cacapon State Park에서 하이킹도 즐겼어요.",
@@ -106,31 +105,33 @@ const ACCOMMODATIONS = [
       location: "Alexandria, VA",
       date: "2026년 2월"
     },
-    pros: ["4.99점 (68개 리뷰) 최고 평점", "DC/볼티모어에서 2시간", "핫텁 + 파이어핏 완비", "반려동물 동반 가능"],
-    cons: [],
-    summary: "핫텁에 몸 담그고 파이어핏에서 별 보는 온천마을 캐빈",
+    pros: ["핫텁 + 파이어핏 + BBQ 그릴 삼박자", "펫 프렌들리 · 커뮤니티 테니스·수영장 (차로 2분)", "Cacapon SP 하이킹 10분 · Berkeley Springs 마을 5분"],
+    cons: ["식탁 6인석 (8인 수용 부족)", "게임룸·사우나 없음"],
+    summary: "Coolfont Mountainside 커뮤니티, 테니스·수영장 무료 (차 2분), 숲속 하이킹 코스, 단 식탁 6인용",
     recommendation: "핫텁 + 파이어핏 캐빈",
     recIcon: "flame",
     searchTerms: ['Airbnb listing #1091621448615450481'],
     en: {
+      region: "Berkeley Springs Area",
       distance: "~2 hrs",
       specs: "8 Guests · 3BR · 3BA",
       priceNote: "$395/night × 2 + tax $94.80",
-      amenities: ["Max 8", "3BR/3BA", "Hot Tub", "Fire Pit", "BBQ Grill", "High-speed WiFi", "Smart TV", "Pet Friendly", "Near Hiking", "Community Tennis Court"],
+      amenities: ["3BR/3BA", "6-Seat Dining", "Fire Pit", "BBQ Grill", "Hot Tub", "Pet Friendly", "Community Tennis · Pool (2-min drive)", "Full Kitchen", "Cacapon State Park Hiking (10-min drive)", "Berkeley Springs Town (5-min drive)"],
       review: {
         rating: "4.99 / 68 Reviews",
         text: "Perfect place for a family with kids and a dog. We had a cozy, relaxing weekend. Enjoyed great dining in nearby Berkeley Springs town and hiking at Cacapon State Park, just 10 min away.",
         date: "Feb 2026"
       },
-      pros: ["4.99 rating (68 reviews) — Top rated", "2 hrs from DC/Baltimore", "Hot tub + fire pit included", "Pet friendly"],
-      cons: [],
-      summary: "Hot tub & fire pit cabin in a charming spa town",
+      pros: ["Hot tub + fire pit + BBQ grill trifecta", "Pet friendly · Community tennis & pool (2-min drive)", "Cacapon SP hiking 10 min · Berkeley Springs town 5 min"],
+      cons: ["6-seat dining (not enough for 8)", "No game room or sauna"],
+      summary: "Coolfont Mountainside community, free tennis & pool (2-min drive), forest hiking trails, but 6-seat dining table",
       recommendation: "Hot Tub + Fire Pit Cabin"
     }
   },
   {
-    id: 200, rank: 3,
+    id: 200, rank: 4,
     lat: 39.56, lng: -78.11,
+    region: "Berkeley Springs 권역",
     name: "Cherry Run Chalet",
     source: "Airbnb",
     location: "Hedgesville, WV",
@@ -152,96 +153,42 @@ const ACCOMMODATIONS = [
       "images/chalet200_07.png"
     ],
     url: "https://www.airbnb.com/rooms/564480643655147574?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
-    amenities: ["최대 8인", "3BR/4beds/2BA", "벽난로", "파이어핏", "데크/포치", "풀키친", "골프장 2개", "실내외 수영장", "핫텁", "테니스/피클볼", "헬스장", "반려동물 가능"],
-    criteria: { tennis: "yes", cooking: "yes", games: "partial", campfire: "yes", pet: "yes" },
+    amenities: ["3BR/4beds/2BA", "식탁크기 6인", "파이어핏", "벽난로", "핫텁 (커뮤니티)", "펫 얼라우드", "테니스/피클볼 (도보)", "풀키친", "클럽하우스 다이닝 (Grille & Pub)", "하이킹 트레일 (커뮤니티 내)", "Harper's Ferry (차로 45분)"],
+    criteria: { tennis: "yes", dining: "partial", games: "no", firepit: "yes", grill: "no", hottub: "yes", sauna: "no", pet: "allowed" },
     review: {
       rating: "5.0 / 102개 리뷰",
-      text: "주말에 두 가족이 함께 머물기에 완벽한 집이었어요! 아이들이 로프트에서 사촌들과 함께 자는 걸 좋아했고 수영장도 정말 즐겼어요. 주방에 필요한 모든 게 갖춰져 있었고, 깨끗하고 편안하고 잘 정돈되어 있었습니다.",
-      author: "Katie",
-      location: "Little Silver, NJ",
-      date: "2026년 1월"
+      text: "The Woods 재방문인데 이번 집은 처음이에요. 숲속 대지에 야외 좌석 넉넉하고 실내엔 자연광이 가득해요. 아이들은 파이어핏에서 스모어 만들기를 좋아했고, 도착 전 이미 불이 준비돼 있었어요. 커뮤니티 수영장과 다양한 하이킹 트레일도 즐겼습니다. 호스트가 풀 패스와 간식까지 준비해둬서 감동!",
+      author: "Sara Jane",
+      location: "Baltimore, MD",
+      date: "2025년 9월"
     },
-    pros: ["5.0 만점 (102개 리뷰) Guest Favorite", "The Woods 커뮤니티 (골프, 수영장, 테니스, 스파)", "벽난로 + 파이어핏 완비", "Superhost · 4월 1일 전 무료 취소"],
-    cons: ["3번째 방이 로프트 (오픈형)"],
-    summary: "수영장·테니스 패스 무료, 차 2분 리조트 커뮤니티",
+    pros: ["테니스/피클볼·핫텁·스파·골프 도보거리 (The Woods)", "클럽하우스 다이닝 (Grille & Pub) · 파이어핏·벽난로", "하이킹 트레일 (커뮤니티 내) + Harper's Ferry 45분"],
+    cons: ["식탁 6인석 · 3번째 방 로프트 (오픈형)", "그릴·게임룸·사우나 없음"],
+    summary: "The Woods 커뮤니티, 테니스·수영장·스파 도보거리, 클럽하우스 다이닝, 다양한 하이킹 트레일, 하퍼스페리 45분, 단 식탁 6인용",
     recommendation: "만점 5.0 Guest Favorite",
     recIcon: "gem",
     searchTerms: ['Airbnb listing #564480643655147574'],
     en: {
+      region: "Berkeley Springs Area",
       distance: "~1.5 hrs",
       specs: "8 Guests · 3BR · 2BA",
       priceNote: "$388/night × 2 + tax $87.36",
-      amenities: ["Max 8", "3BR/4beds/2BA", "Fireplace", "Fire Pit", "Deck/Porch", "Full Kitchen", "2 Golf Courses", "Indoor/Outdoor Pool", "Hot Tub", "Tennis/Pickleball", "Gym", "Pet Friendly"],
+      amenities: ["3BR/4beds/2BA", "6-Seat Dining", "Fire Pit", "Fireplace", "Hot Tub (Community)", "Pets Allowed", "Tennis/Pickleball (Walking)", "Full Kitchen", "Clubhouse Dining (Grille & Pub)", "Hiking Trails (On-site)", "Harper's Ferry (45-min drive)"],
       review: {
         rating: "5.0 / 102 Reviews",
-        text: "Perfect home for two families! Kids loved sleeping in the loft with cousins and enjoyed the pool. Kitchen had everything we needed — clean, comfortable, and well-organized.",
-        date: "Jan 2026"
+        text: "Returning to The Woods but new property for us. Beautiful wooded lot with ample outdoor seating and natural light. Kids loved making s'mores at the fire pit — fire was even prepared before arrival. Enjoyed community pool and hiking trails. Host left pool passes and snacks!",
+        date: "Sep 2025"
       },
-      pros: ["Perfect 5.0 (102 reviews) Guest Favorite", "The Woods community (golf, pool, tennis, spa)", "Fireplace + fire pit included", "Superhost · Free cancellation before Apr 1"],
-      cons: ["3rd bedroom is a loft (open layout)"],
-      summary: "Free pool & tennis pass, 2-min drive to resort community",
+      pros: ["Tennis/pickleball · hot tub · spa · golf walking distance (The Woods)", "Clubhouse dining (Grille & Pub) · fire pit · fireplace", "Hiking trails (on-site) + Harper's Ferry 45 min"],
+      cons: ["6-seat dining · 3rd bedroom is open loft", "No grill, game room, or sauna"],
+      summary: "The Woods community, tennis · pool · spa walking distance, clubhouse dining, hiking trails, Harper's Ferry 45 min, but 6-seat dining table",
       recommendation: "Perfect 5.0 Guest Favorite"
-    }
-  },
-  {
-    id: 500, rank: 1,
-    lat: 39.55, lng: -78.12,
-    name: "Bear Pines Retreat ~ Game Room ~ Screened Porch",
-    source: "Airbnb",
-    location: "Hedgesville, WV (The Woods)",
-    distance: "약 1.5시간",
-    miles: 95,
-    route: "I-81 North",
-    priceLow: 835,
-    priceHigh: 835,
-    specs: "7인 · 침실3 · 화장실2",
-    priceNote: "$375/박 × 2 + 세금 $84.53 (할인가)",
-    image: "images/bear500_01.png",
-    gallery: [
-      "images/bear500_01.png",
-      "images/bear500_02.png",
-      "images/bear500_03.png",
-      "images/bear500_04.png",
-      "images/bear500_05.png",
-      "images/bear500_06.png",
-      "images/bear500_07.png",
-      "images/bear500_08.png"
-    ],
-    url: "https://www.airbnb.com/rooms/49607922?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
-    amenities: ["최대 7인", "3BR/6beds/2BA", "게임룸(탁구/당구/에어하키)", "스크린 포치", "파이어핏", "풀키친", "실내외 수영장", "핫텁", "테니스/피클볼", "헬스장", "반려동물 가능"],
-    criteria: { tennis: "yes", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
-    review: {
-      rating: "4.93 / 302개 리뷰",
-      text: "스크린 포치에서 아침 커피 마시며 자연을 즐기고, 게임룸에서 아이들이 탁구와 당구에 빠져 지루할 틈이 없었어요. 저녁에는 파이어핏에서 스모어를 만들며 가족 시간을 보냈습니다. 봄방학 가족 여행으로 완벽!",
-      author: "Samuel",
-      location: "Virginia",
-      date: "2025년 4월"
-    },
-    pros: ["4.93점 (302개 리뷰) Guest Favorite 최다 리뷰", "게임룸 + 스크린 포치", "The Woods 커뮤니티 시설 포함", "Superhost Lou · 3월 28일 전 무료 취소"],
-    cons: ["최대 7인 (8인 불가)", "Rare find - 인기 많아 빨리 마감"],
-    summary: "리뷰 302개 검증, 게임룸+스크린 포치, 리조트 커뮤니티",
-    recommendation: "리뷰 최다 302개",
-    recIcon: "flame",
-    searchTerms: ['Airbnb listing #49607922'],
-    en: {
-      distance: "~1.5 hrs",
-      specs: "7 Guests · 3BR · 2BA",
-      priceNote: "$375/night × 2 + tax $84.53 (discounted)",
-      amenities: ["Max 7", "3BR/6beds/2BA", "Game Room (Ping Pong/Pool/Air Hockey)", "Screened Porch", "Fire Pit", "Full Kitchen", "Indoor/Outdoor Pool", "Hot Tub", "Tennis/Pickleball", "Gym", "Pet Friendly"],
-      review: {
-        rating: "4.93 / 302 Reviews",
-        text: "Morning coffee on the screened porch surrounded by nature, kids loved ping pong and pool in the game room. S'mores at the fire pit in the evening — perfect family spring break trip!",
-        date: "Apr 2025"
-      },
-      pros: ["4.93 (302 reviews) — Most reviewed Guest Favorite", "Game room + screened porch", "The Woods community amenities included", "Superhost Lou · Free cancellation before Mar 28"],
-      cons: ["Max 7 guests (no 8th)", "Rare find — books up fast"],
-      summary: "302 verified reviews, game room + screened porch, resort community",
-      recommendation: "Most Reviews: 302"
     }
   },
   {
     id: 300, rank: 6,
     lat: 38.92, lng: -78.51,
+    region: "Shenandoah Valley",
     name: "Cozy Log Cabin w/ Porch, Fire Pit, Games & River",
     source: "Airbnb",
     location: "Maurertown, VA (Shenandoah Valley)",
@@ -262,8 +209,8 @@ const ACCOMMODATIONS = [
       "images/cabin300_06.png"
     ],
     url: "https://www.airbnb.com/rooms/20965201?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
-    amenities: ["최대 8인", "3BR/2.5BA", "통나무 캐빈", "파이어핏", "포치", "풀키친", "풋볼/에어하키", "강 접근 (75야드)", "튜빙/카약", "반려동물 가능"],
-    criteria: { tennis: "no", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
+    amenities: ["3BR/2.5BA", "식탁크기 8인", "파이어핏", "펫 프렌들리", "통나무 캐빈", "게임룸 (풋볼/에어하키/보드게임)", "풀키친", "강 접근 75야드 (여름 카약/튜빙)"],
+    criteria: { tennis: "no", dining: "yes", games: "yes", firepit: "yes", grill: "no", hottub: "no", sauna: "no", pet: "yes" },
     review: {
       rating: "4.9 / 242개 리뷰",
       text: "아이와 강아지를 데리고 머물기에 완벽한 곳이었어요! 뒷마당이 넓고 강까지 바로 걸어갈 수 있어요. 아이들은 지하실 에어하키에 빠져 살았고, 파이어핏에서 스모어도 만들었습니다. 호스트도 정말 친절하고 응답이 빨라요!",
@@ -271,41 +218,43 @@ const ACCOMMODATIONS = [
       location: "Gaithersburg, MD",
       date: "2025년 12월"
     },
-    pros: ["4.9점 (242개 리뷰) Guest Favorite", "강 접근 + 파이어핏", "게임룸 (풋볼, 에어하키, 보드게임)", "반려동물 가능"],
-    cons: ["시설 다소 노후된 편", "테니스 시설 없음"],
+    pros: ["식탁 8인 + 게임룸 (풋볼/에어하키/보드게임)", "파이어핏 + 강 접근 75야드 · 펫 프렌들리", "통나무 캐빈 분위기 · $857 합리적 가격"],
+    cons: ["그릴·핫텁·사우나·테니스 없음", "시설 다소 노후 · 4월엔 강 활동 제한"],
     summary: "뒷마당에 강(여름엔 카약), 게임룸 에어하키, 시설 다소 낡음",
     recommendation: "리뷰 242개 검증된 인기 캐빈",
     recIcon: "flame",
     searchTerms: ['Airbnb listing #20965201'],
     en: {
+      region: "Shenandoah Valley",
       distance: "~1.5–2 hrs",
       specs: "8 Guests · 3BR · 2.5BA",
       priceNote: "$389/night × 2 + tax $80.05",
-      amenities: ["Max 8", "3BR/2.5BA", "Log Cabin", "Fire Pit", "Porch", "Full Kitchen", "Foosball/Air Hockey", "River Access (75 yds)", "Tubing/Kayak", "Pet Friendly"],
+      amenities: ["3BR/2.5BA", "8-Seat Dining", "Fire Pit", "Pet Friendly", "Log Cabin", "Game Room (Foosball/Air Hockey/Board Games)", "Full Kitchen", "River Access 75 yds (Summer Kayak/Tubing)"],
       review: {
         rating: "4.9 / 242 Reviews",
         text: "Perfect for families with kids and dogs! Spacious backyard with direct river access. Kids were obsessed with the basement air hockey, and we made s'mores at the fire pit. Host was super friendly and responsive!",
         date: "Dec 2025"
       },
-      pros: ["4.9 (242 reviews) Guest Favorite", "River access + fire pit", "Game room (foosball, air hockey, board games)", "Pet friendly"],
-      cons: ["Somewhat dated facilities", "No tennis courts"],
+      pros: ["8-seat dining + game room (foosball/air hockey/board games)", "Fire pit + river access 75 yds · Pet friendly", "Log cabin charm · Reasonable at $857"],
+      cons: ["No grill, hot tub, sauna, or tennis", "Somewhat dated · River activities limited in April"],
       summary: "River in backyard (kayak in summer), air hockey game room, slightly dated",
       recommendation: "242 Reviews — Proven Popular"
     }
   },
   {
-    id: 400, rank: 2,
+    id: 400, rank: 1,
     lat: 38.48, lng: -78.26,
+    region: "Blue Ridge / Piedmont",
     name: "10-Acre Dog-Friendly House w/ Grill & Near Wineries",
     source: "Airbnb",
     location: "Reva, VA (Shenandoah / Blue Ridge)",
     distance: "약 1.5시간",
     miles: 90,
     route: "I-66 West → Rte 29",
-    priceLow: 731,
-    priceHigh: 731,
+    priceLow: 980,
+    priceHigh: 980,
     specs: "8인 · 침실3 · 화장실2",
-    priceNote: "$347/박 × 2 + 세금 $36.78 (할인가)",
+    priceNote: "$465.50/박 × 2 + 세금 $49.34",
     image: "images/house400_01.png",
     gallery: [
       "images/house400_01.png",
@@ -317,8 +266,8 @@ const ACCOMMODATIONS = [
       "images/house400_07.png"
     ],
     url: "https://www.airbnb.com/rooms/562877806093194888?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
-    amenities: ["최대 8인", "3BR/5beds/2BA", "10에이커 부지", "파이어핏", "그릴", "풀키친", "보드게임", "포치", "와이너리 인접", "반려동물 가능"],
-    criteria: { tennis: "no", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
+    amenities: ["3BR/5beds/2BA", "식탁크기 8인", "파이어핏", "그릴", "펫 프렌들리", "10에이커 부지", "풀키친", "와이너리 인접 (차로 15분)", "하이킹 코스 (차로 25분)"],
+    criteria: { tennis: "no", dining: "yes", games: "no", firepit: "yes", grill: "yes", hottub: "no", sauna: "no", pet: "yes" },
     review: {
       rating: "4.94 / 174개 리뷰",
       text: "완벽한 휴양지였어요! 깨끗하고 세심하게 꾸며진 공간에 주방도 완벽하게 갖춰져 있었습니다. 야외 파이어핏에서 보낸 저녁이 최고였고, 호스트 Joy의 응대도 빠르고 친절했어요. 반려견을 위한 용품(침대, 간식, 그릇)까지 준비되어 있어 감동!",
@@ -326,31 +275,33 @@ const ACCOMMODATIONS = [
       location: "Washington, DC",
       date: "2025년 10월"
     },
-    pros: ["4.94점 (174개 리뷰) Guest Favorite", "청결도 5.0 · 깨끗하고 세련된 인테리어", "10에이커 사유지 · 완벽한 프라이버시", "Superhost Joy · 반려견 용품 구비"],
-    cons: ["테니스 시설 없음", "위치가 다소 외진 편"],
-    summary: "청결 5.0 새집 느낌, 10에이커 독채에서 완벽한 프라이버시",
+    pros: ["식탁 8인 + 파이어핏 + 그릴 · 펫 프렌들리", "10에이커 사유지 · 완벽한 프라이버시 · 새집 느낌 인테리어", "Superhost Joy · 반려견 용품(침대·간식·그릇) 구비", "와이너리 인접 (차로 15분) · 하이킹 코스 (차로 25분)"],
+    cons: ["핫텁·사우나·테니스·게임룸 없음", "위치가 다소 외진 편 · 최고가 $980"],
+    summary: "청결 5.0 새집 느낌, 10에이커 독채에서 완벽한 프라이버시, 주변 와이너리, 8인 식탁, 넓은 주방 및 매력적인 캠프파이어 공간",
     recommendation: "청결 5.0 · 가성비 최고 할인가",
     recIcon: "sparkles",
     searchTerms: ['Airbnb listing #562877806093194888'],
     en: {
+      region: "Blue Ridge / Piedmont",
       distance: "~1.5 hrs",
       specs: "8 Guests · 3BR · 2BA",
-      priceNote: "$347/night × 2 + tax $36.78 (discounted)",
-      amenities: ["Max 8", "3BR/5beds/2BA", "10-Acre Property", "Fire Pit", "Grill", "Full Kitchen", "Board Games", "Porch", "Near Wineries", "Pet Friendly"],
+      priceNote: "$465.50/night × 2 + tax $49.34",
+      amenities: ["3BR/5beds/2BA", "8-Seat Dining", "Fire Pit", "Grill", "Pet Friendly", "10-Acre Property", "Full Kitchen", "Wineries Nearby (15-min drive)", "Hiking Trails (25-min drive)"],
       review: {
         rating: "4.94 / 174 Reviews",
         text: "Perfect retreat! Beautifully decorated, spotless, and fully equipped kitchen. Evening by the fire pit was the highlight. Host Joy was responsive and kind — even provided dog beds, treats, and bowls!",
         date: "Oct 2025"
       },
-      pros: ["4.94 (174 reviews) Guest Favorite", "Cleanliness 5.0 · Modern, stylish interior", "10-acre private estate · Total privacy", "Superhost Joy · Dog supplies provided"],
-      cons: ["No tennis courts", "Somewhat remote location"],
-      summary: "Cleanliness 5.0, like-new feel, total privacy on 10 acres",
+      pros: ["8-seat dining + fire pit + grill · Pet friendly", "10-acre private estate · Total privacy · Like-new interior", "Superhost Joy · Dog supplies (bed, treats, bowls) provided", "Wineries nearby (15-min drive) · Hiking trails (25-min drive)"],
+      cons: ["No hot tub, sauna, tennis, or game room", "Somewhat remote · Highest price at $980"],
+      summary: "Cleanliness 5.0, like-new feel, total privacy on 10 acres, nearby wineries, 8-seat dining, spacious kitchen & charming campfire area",
       recommendation: "Cleanliness 5.0 · Best Value"
     }
   },
   {
-    id: 600, rank: 5,
+    id: 600, rank: 2,
     lat: 38.82, lng: -78.33,
+    region: "Shenandoah Valley",
     name: "The Wandering Caribou · Hot Tub · Sauna · Home Theater",
     source: "Airbnb",
     location: "Bentonville, VA (Shenandoah)",
@@ -372,8 +323,8 @@ const ACCOMMODATIONS = [
       "images/chalet600_01.png"
     ],
     url: "https://www.airbnb.com/rooms/833692295458157348?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1",
-    amenities: ["최대 8인", "3BR/4beds/3BA", "사우나", "핫텁", "홈시어터", "게임룸(포커/아케이드)", "마사지체어", "파이어핏", "그릴", "풀키친", "마운틴뷰 데크", "반려동물 가능"],
-    criteria: { tennis: "no", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
+    amenities: ["3BR/4beds/3BA", "식탁크기 6인", "파이어핏", "그릴", "핫텁", "사우나", "펫 얼라우드", "홈시어터", "게임룸 (포커/아케이드)", "마사지체어", "마운틴뷰 데크", "풀키친", "셰넌도어 국립공원 (차로 15분)", "Luray Caverns (차로 20분)"],
+    criteria: { tennis: "no", dining: "partial", games: "yes", firepit: "yes", grill: "yes", hottub: "yes", sauna: "yes", pet: "allowed" },
     review: {
       rating: "4.9 / 111개 리뷰",
       text: "DC에서 가까운 완벽한 휴양지! 따뜻한 2월 날씨에 사우나, 마사지 체어, 비데까지 럭셔리 어메니티를 마음껏 즐겼어요. 3개 침실이 각 층에 분리되어 있어 프라이버시도 완벽. Amir 호스트가 얼리 체크인도 흔쾌히 허락해줬어요.",
@@ -381,31 +332,90 @@ const ACCOMMODATIONS = [
       location: "Fairfax, VA",
       date: "2026년 3월"
     },
-    pros: ["4.9점 (111개 리뷰) Guest Favorite", "사우나 + 핫텁 + 마사지체어 럭셔리 조합", "홈시어터 + 게임룸 (포커, 아케이드)", "Superhost Amir · 무료 취소"],
-    cons: ["식탁 6인석 (8인 수용 부족)", "셀 리셉션 없음 (WiFi만 가능)", "최고가 $905"],
-    summary: "사우나·홈시어터·마사지체어, 단 식탁 6인석",
+    pros: ["핫텁 + 사우나 + 마사지체어 — 유일한 럭셔리 조합", "파이어핏 + 그릴 + 홈시어터 + 게임룸 (포커/아케이드)", "셰넌도어 국립공원 15분 · Luray Caverns 20분"],
+    cons: ["식탁 6인석 (8인 수용 부족)", "셀 리셉션 없음 (WiFi만) · 테니스 없음"],
+    summary: "사우나, 홈시어터, 게임룸, 마사지체어, 주변 루레이/셰넌도어, 다양한 하이킹 트레일, 단 식탁 6인석",
     recommendation: "사우나 + 홈시어터 유일",
     recIcon: "sparkles",
     searchTerms: ['Airbnb listing #833692295458157348'],
     en: {
+      region: "Shenandoah Valley",
       distance: "~1.5 hrs",
       specs: "8 Guests · 3BR · 3BA",
       priceNote: "$479/night × 2 − discount $137 + tax $84.48",
-      amenities: ["Max 8", "3BR/4beds/3BA", "Sauna", "Hot Tub", "Home Theater", "Game Room (Poker/Arcade)", "Massage Chair", "Fire Pit", "Grill", "Full Kitchen", "Mountain View Deck", "Pet Friendly"],
+      amenities: ["3BR/4beds/3BA", "6-Seat Dining", "Fire Pit", "Grill", "Hot Tub", "Sauna", "Pets Allowed", "Home Theater", "Game Room (Poker/Arcade)", "Massage Chair", "Mountain View Deck", "Full Kitchen", "Shenandoah NP (15-min drive)", "Luray Caverns (20-min drive)"],
       review: {
         rating: "4.9 / 111 Reviews",
         text: "Perfect getaway near DC! Enjoyed the sauna, massage chair, and bidet — luxury amenities galore. 3 bedrooms on separate floors for great privacy. Host Amir even allowed early check-in!",
         date: "Mar 2026"
       },
-      pros: ["4.9 (111 reviews) Guest Favorite", "Sauna + hot tub + massage chair luxury combo", "Home theater + game room (poker, arcade)", "Superhost Amir · Free cancellation"],
-      cons: ["Dining table seats only 6 (not enough for 8)", "No cell reception (WiFi only)", "Highest price at $905"],
-      summary: "Sauna · home theater · massage chair, but only 6-seat dining table",
+      pros: ["Hot tub + sauna + massage chair — only luxury combo", "Fire pit + grill + home theater + game room (poker/arcade)", "Shenandoah NP 15 min · Luray Caverns 20 min"],
+      cons: ["6-seat dining (not enough for 8)", "No cell reception (WiFi only) · No tennis"],
+      summary: "Sauna · home theater · massage chair, near Shenandoah NP & Skyline Drive, but 6-seat dining table",
       recommendation: "Only One with Sauna + Theater"
+    }
+  },
+  {
+    id: 700, rank: 5,
+    lat: 38.75, lng: -78.64,
+    region: "Shenandoah Valley",
+    name: "Mountain Modern Home w/ Game Room, Fire Pit, Grill",
+    source: "Airbnb",
+    location: "Mount Jackson, VA (Bryce Resort)",
+    distance: "약 2시간",
+    miles: 130,
+    route: "I-66 West → I-81 South",
+    priceLow: 750,
+    priceHigh: 750,
+    specs: "8인 · 침실3 · 화장실2.5",
+    priceNote: "$340/박 × 2 + 세금 $70.04",
+    image: "images/home700_01.png",
+    gallery: [
+      "images/home700_01.png",
+      "images/home700_02.png",
+      "images/home700_03.png",
+      "images/home700_04.png",
+      "images/home700_05.png",
+      "images/home700_06.png",
+      "images/home700_07.png"
+    ],
+    url: "https://www.airbnb.com/rooms/1017921827745742221?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
+    amenities: ["3BR/4beds/2.5BA", "식탁크기 8인", "파이어핏", "그릴", "펫 얼라우드 (50lb↓, $25/박)", "게임룸 (아케이드/보드게임)", "마운틴뷰 데크", "온돌 바닥 (마스터)", "풀키친", "Bryce Resort 패스 포함"],
+    criteria: { tennis: "no", dining: "yes", games: "yes", firepit: "yes", grill: "yes", hottub: "no", sauna: "no", pet: "allowed" },
+    review: {
+      rating: "5.0 / 58개 리뷰",
+      text: "Joshua의 집은 최고의 에어비앤비였어요! 아이들이 지하 게임룸에서 너무 재미있게 놀았고, 파이어핏에서 스모어도 만들었어요. 주방에 모든 게 갖춰져 있어 식사 준비도 완벽. Joshua가 항상 빠르게 응답해주고, Bryce Resort 패스까지 제공해줘서 감사했습니다.",
+      author: "Kerly",
+      location: "Leesburg, VA",
+      date: "2025년 4월"
+    },
+    pros: ["최저가 $750 — 가성비 최고", "식탁 8인 + 게임룸 (아케이드/보드게임) + 파이어핏 + 그릴", "마운틴뷰 데크 + 온돌 바닥 (마스터)", "Bryce Resort 패스 포함 (마운틴바이크·레이크하이킹·4/4 이스터에그헌트)"],
+    cons: ["핫텁·사우나·테니스 없음 · 파이어핏/데크 협소", "반려견 50lb↓ 제한 ($25/박) · 약 2시간 거리"],
+    summary: "만점 5.0 최저가 $750, 게임룸·파이어핏, Bryce Resort 패스 (마운틴바이크·레이크하이킹·4/4 이스터에그헌트), 주방 및 다이닝 공간 훌륭하나 파이어핏, 데크 공간은 협소",
+    recommendation: "최저가 $750 · 만점 5.0",
+    recIcon: "sparkles",
+    searchTerms: ['Airbnb listing #1017921827745742221'],
+    en: {
+      region: "Shenandoah Valley",
+      distance: "~2 hrs",
+      specs: "8 Guests · 3BR · 2.5BA",
+      priceNote: "$340/night × 2 + tax $70.04",
+      amenities: ["3BR/4beds/2.5BA", "8-Seat Dining", "Fire Pit", "Grill", "Pets Allowed (under 50lb, $25/night)", "Game Room (Arcade/Board Games)", "Mountain View Deck", "Heated Floors (Master)", "Full Kitchen", "Bryce Resort Passes Included"],
+      review: {
+        rating: "5.0 / 58 Reviews",
+        text: "Best Airbnb ever! Kids had a blast in the basement game room, made s'mores at the fire pit. Kitchen fully stocked for all meals. Joshua was super responsive and Bryce Resort passes were a huge bonus!",
+        date: "Apr 2025"
+      },
+      pros: ["Lowest at $750 — best value", "8-seat dining + game room (arcade/board games) + fire pit + grill", "Mountain view deck + heated floors (master)", "Bryce Resort passes (mtn biking · lake hiking · 4/4 Easter Egg Hunt)"],
+      cons: ["No hot tub, sauna, or tennis · Small fire pit/deck", "Dogs under 50lb only ($25/night) · ~2 hrs away"],
+      summary: "Perfect 5.0, lowest at $750, game room & fire pit, Bryce Resort passes (mtn biking · lake hiking · 4/4 Easter Egg Hunt), great kitchen & dining but small fire pit & deck",
+      recommendation: "Lowest $750 · Perfect 5.0"
     }
   },
   {
     id: 1, rank: 7,
     lat: 38.38, lng: -78.83,
+    region: "Massanutten",
     name: "Massanutten Resort 캐빈",
     source: "TripForth / VRBO",
     location: "McGaheysville, VA",
@@ -419,8 +429,8 @@ const ACCOMMODATIONS = [
     image: "images/massanutten.jpg",
     url: "https://www.massresort.com/",
     soldOut: true,
-    amenities: ["테니스코트", "실내수영장", "워터파크", "게임룸", "농구코트", "라켓볼", "풀키친", "세탁기", "핫텁(일부)", "파이어핏(일부)", "골프", "하이킹", "자전거"],
-    criteria: { tennis: "yes", cooking: "yes", games: "yes", campfire: "partial", pet: "no" },
+    amenities: ["4BR 리조트", "식탁크기 8인", "파이어핏 (일부)", "핫텁 (일부)", "반려동물 불가", "테니스코트", "워터파크", "게임룸", "농구코트", "라켓볼", "풀키친", "하이킹", "자전거"],
+    criteria: { tennis: "yes", dining: "yes", games: "yes", firepit: "partial", grill: "no", hottub: "partial", sauna: "no", pet: "no" },
     pros: ["올인원 리조트로 활동 풍부", "테니스/축구/수영 모두 가능", "아이들 워터파크 즐길 수 있음", "리조트 내 안전한 환경"],
     cons: ["리조트 이용료 추가 발생", "캐빈 자체는 소박할 수 있음"],
     summary: "워터파크·테니스·게임룸 올인원, 아이들 천국 리조트",
@@ -428,11 +438,12 @@ const ACCOMMODATIONS = [
     recIcon: "trophy",
     searchTerms: ['Airbnb → "Massanutten" 검색', 'VRBO → massanutten resort', 'tripforth.com/resort/massanutten'],
     en: {
+      region: "Massanutten",
       name: "Massanutten Resort Cabin",
       distance: "~2 hrs",
       specs: "4BR · Resort",
       priceNote: "4BR rate · Resort fees extra",
-      amenities: ["Tennis Courts", "Indoor Pool", "Water Park", "Game Room", "Basketball Court", "Racquetball", "Full Kitchen", "Washer", "Hot Tub (some)", "Fire Pit (some)", "Golf", "Hiking", "Biking"],
+      amenities: ["4BR Resort", "8-Seat Dining", "Fire Pit (some)", "Hot Tub (some)", "No Pets", "Tennis Courts", "Water Park", "Game Room", "Basketball Court", "Racquetball", "Full Kitchen", "Hiking", "Biking"],
       pros: ["All-in-one resort with tons of activities", "Tennis, soccer, swimming all available", "Kids can enjoy water park", "Safe environment within resort"],
       cons: ["Additional resort fees apply", "Cabins themselves may be basic"],
       summary: "Water park · tennis · game room all-in-one, kids' paradise resort",
@@ -450,11 +461,11 @@ const I18N = {
     title2: '재민이 우진이 재윤이<br>숙소 비교',
     subtitle: '4월 2일(목) – 4일(토) &middot; 2박 3일',
     desc: 'Arlington, VA 출발 &middot; 어른 7명 &middot; 강아지 1마리',
-    tags: ['테니스', '요리', '보드게임', '캠프파이어', '펫 프렌들리'],
+    tags: ['테니스', '식탁 크기', '게임룸', '파이어핏', '그릴', '핫텁', '사우나', '펫 프렌들리'],
     mapTitle: '위치 한눈에 보기',
     mapSub: '집에서의 거리',
     listTitle: '숙소 목록',
-    perNight: '/2박 총',
+    perNight: '/2박, 7인+Pet',
     priceCheck: '가격 확인',
     detail: '상세보기',
     facility: '시설',
@@ -464,18 +475,18 @@ const I18N = {
     viewLink: '숙소 상세 보기 →',
     footer: '4월 초는 봄방학 시즌이므로 빠른 예약을 권장합니다. 가격은 숙소와 날짜에 따라 변동될 수 있습니다.',
     home: '우리집',
-    criteria: { tennis: '테니스', cooking: '요리', games: '보드게임', campfire: '캠프파이어', pet: '펫 프렌들리' }
+    criteria: { tennis: '테니스', dining: '식탁 크기', games: '게임룸', firepit: '파이어핏', grill: '그릴', hottub: '핫텁', sauna: '사우나', pet: '펫 프렌들리' }
   },
   en: {
     title1: 'Spring Break',
     title2: 'Jaemin · Woojin · Jaeyoon<br>Accommodation Guide',
     subtitle: 'Thu, Apr 2 – Sat, Apr 4 &middot; 2 Nights',
     desc: 'From Arlington, VA &middot; 7 Adults &middot; 1 Dog',
-    tags: ['Tennis', 'Cooking', 'Board Games', 'Campfire', 'Pet Friendly'],
+    tags: ['Tennis', 'Dining Table', 'Game Room', 'Fire Pit', 'Grill', 'Hot Tub', 'Sauna', 'Pet Friendly'],
     mapTitle: 'Location Overview',
     mapSub: 'Distance from home',
     listTitle: 'Accommodations',
-    perNight: '/2 nights total',
+    perNight: '/2 nights, 7+Pet',
     priceCheck: 'Check price',
     detail: 'Details',
     facility: 'Amenities',
@@ -485,7 +496,7 @@ const I18N = {
     viewLink: 'View listing →',
     footer: 'Early April is spring break season — book early. Prices may vary by listing and date.',
     home: 'Home',
-    criteria: { tennis: 'Tennis', cooking: 'Cooking', games: 'Games', campfire: 'Campfire', pet: 'Pet Friendly' }
+    criteria: { tennis: 'Tennis', dining: 'Dining Table', games: 'Game Room', firepit: 'Fire Pit', grill: 'Grill', hottub: 'Hot Tub', sauna: 'Sauna', pet: 'Pet Friendly' }
   }
 };
 
@@ -502,32 +513,6 @@ function tdReview(item, key) {
   return item.review ? item.review[key] : '';
 }
 
-// ── 하트(좋아요) ──
-const LIKES_KEY = 'springbreak_likes';
-function getLikes() {
-  try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
-}
-function toggleLike(id) {
-  const likes = getLikes();
-  likes[id] = !likes[id];
-  localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
-  const btn = document.querySelector(`.heart-btn[data-id="${id}"]`);
-  const icon = btn.querySelector('.heart-icon');
-  const count = btn.querySelector('.heart-count');
-  if (likes[id]) {
-    icon.style.color = '#ef4444';
-    icon.style.fill = '#ef4444';
-    icon.style.transform = 'scale(1.3)';
-    setTimeout(() => icon.style.transform = 'scale(1)', 200);
-    count.textContent = '1';
-    count.style.opacity = '1';
-  } else {
-    icon.style.color = 'rgba(255,255,255,0.7)';
-    icon.style.fill = 'none';
-    count.textContent = '';
-    count.style.opacity = '0';
-  }
-}
 
 // ── 거리 색상 ──
 function distanceColor(miles) {
@@ -540,6 +525,7 @@ function distanceColor(miles) {
 function criteriaStyles(status) {
   return {
     yes:     { dot: 'bg-emerald-400', text: 'text-white/70' },
+    allowed: { dot: 'bg-emerald-400', text: 'text-white/70' },
     partial: { dot: 'bg-amber-400/70', text: 'text-white/40' },
     no:      { dot: 'bg-white/[0.12]', text: 'text-white/20' }
   }[status];
@@ -556,11 +542,13 @@ function renderCard(item) {
     : '';
 
   const cMap = getCriteriaMap();
+  const petAllowedLabel = currentLang === 'ko' ? '펫 얼라우드' : 'Pets Allowed';
   const criteriaHTML = Object.entries(item.criteria).map(([key, status]) => {
     const s = criteriaStyles(status);
+    const label = (key === 'pet' && status === 'allowed') ? petAllowedLabel : cMap[key];
     return `<span class="flex items-center gap-1.5">
       <span class="w-[5px] h-[5px] rounded-full ${s.dot}"></span>
-      <span class="${s.text}">${cMap[key]}</span>
+      <span class="${s.text}">${label}</span>
     </span>`;
   }).join('');
 
@@ -597,13 +585,7 @@ function renderCard(item) {
           <img src="${item.image}" alt="${item.name}" class="gallery-main-img w-full h-full object-cover transition-transform duration-300 ${item.soldOut ? 'grayscale opacity-40' : 'group-hover:scale-[1.03]'}" loading="lazy">
         </div>
         ${item.rank ? `<div class="absolute top-3 left-3 w-7 h-7 rounded-full ${item.rank === 1 ? 'bg-amber-400 text-black' : 'bg-white/20 text-white'} flex items-center justify-center text-[13px] font-bold z-20 backdrop-blur-sm">${item.rank}</div>` : ''}
-        ${!item.soldOut ? (() => { const likes = getLikes(); const liked = likes[item.id]; return `
-        <button class="heart-btn absolute top-3 right-3 z-20 flex items-center gap-1 cursor-pointer bg-black/30 backdrop-blur-sm rounded-full px-2 py-1.5 hover:bg-black/50 transition-colors" data-id="${item.id}" onclick="event.preventDefault();event.stopPropagation();toggleLike(${item.id})">
-          <svg class="heart-icon w-5 h-5 transition-all duration-200" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:${liked ? '#ef4444' : 'rgba(255,255,255,0.7)'};fill:${liked ? '#ef4444' : 'none'};filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-          <span class="heart-count text-white text-[12px] font-semibold" style="opacity:${liked ? '1' : '0'}">${liked ? '1' : ''}</span>
-        </button>`; })() : ''}
+        ${item.region ? `<span class="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white/80 text-[10px] font-medium tracking-wide">${td(item, 'region')}</span>` : ''}
         ${item.soldOut ? `
         <div class="absolute inset-0 flex items-center justify-center">
           <span class="px-5 py-2 rounded-full bg-red-500/90 text-white text-[13px] font-bold tracking-widest uppercase">FULL BOOKED</span>
@@ -623,16 +605,16 @@ function renderCard(item) {
     </div>
 
     <div class="p-5 flex flex-col flex-1 ${item.soldOut ? 'opacity-50' : ''}">
-      ${badge ? `<div class="mb-2">${badge}</div>` : ''}
+      ${badge || item.distance ? `<div class="flex items-center gap-2 mb-2">
+        ${badge}
+        ${item.distance ? `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/[0.08] text-emerald-300 text-[11px] font-medium tracking-wide">
+          <i data-lucide="car" class="w-3.5 h-3.5"></i>
+          ${td(item, 'distance')}
+        </span>` : ''}
+      </div>` : ''}
 
       <div class="mb-1.5">
-        <h3 class="text-white text-[16px] font-semibold leading-tight mb-1">${td(item, 'name') || item.name}</h3>
-        <div class="flex items-center gap-1.5 text-[12px]">
-          <i data-lucide="map-pin" class="w-3 h-3 text-white/30 shrink-0"></i>
-          <span class="text-white/40">${item.location}</span>
-          <span class="text-white/15 mx-0.5">/</span>
-          <span class="${distanceColor(item.miles)}">${td(item, 'distance')}</span>
-        </div>
+        <h3 class="text-white text-[16px] font-semibold leading-tight">${td(item, 'name') || item.name}</h3>
       </div>
 
       <div class="mb-2">
@@ -815,10 +797,42 @@ function initMap() {
     }).addTo(map).bindPopup(`<b>${a.rank}. ${a.name}</b><br>${a.location}<br>${a.distance} · $${a.priceLow}`);
   });
 
-  // fitBounds로 모든 마커가 보이도록 자동 조정
-  if (allPoints.length > 0) {
-    map.fitBounds(allPoints, { padding: [30, 30], maxZoom: 9 });
-  }
+  // ── 권역 라벨 표시 ──
+  const regionGroups = {};
+  ACCOMMODATIONS.filter(a => a.lat && a.lng && a.region).forEach(a => {
+    const rKey = a.region;
+    if (!regionGroups[rKey]) regionGroups[rKey] = { lats: [], lngs: [], en: a.en?.region || rKey };
+    regionGroups[rKey].lats.push(a.lat);
+    regionGroups[rKey].lngs.push(a.lng);
+  });
+
+  const regionColors = {
+    'Berkeley Springs 권역': '#60a5fa',
+    'Shenandoah Valley': '#a78bfa',
+    'Blue Ridge / Piedmont': '#f59e0b',
+    'Massanutten': '#f87171'
+  };
+
+  Object.entries(regionGroups).forEach(([region, data]) => {
+    const cLat = data.lats.reduce((s,v) => s+v, 0) / data.lats.length;
+    const cLng = data.lngs.reduce((s,v) => s+v, 0) / data.lngs.length;
+    const label = currentLang === 'en' ? data.en : region;
+    const color = regionColors[region] || '#94a3b8';
+    // 라벨을 마커 클러스터 위쪽에 배치
+    const offsetLat = data.lats.length > 1 ? 0.12 : 0.10;
+    L.marker([Math.max(...data.lats) + offsetLat, cLng], {
+      icon: L.divIcon({
+        className: '',
+        html: `<div style="white-space:nowrap;padding:3px 10px;border-radius:12px;background:${color}22;border:1.5px solid ${color}55;color:${color};font-size:11px;font-weight:600;font-family:Inter,sans-serif;letter-spacing:0.03em;backdrop-filter:blur(4px);text-align:center;">${label}</div>`,
+        iconSize: [0, 0],
+        iconAnchor: [0, 12]
+      }),
+      interactive: false
+    }).addTo(map);
+  });
+
+  // 집을 중앙에 놓고 모든 마커가 보이는 줌 레벨
+  map.setView([homeLat, homeLng], 8);
 }
 
 function initCarousels() {
@@ -833,7 +847,7 @@ function initCarousels() {
         if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
           carousel.scrollLeft = 0;
         }
-      }, 25);
+      }, 50);
     });
     card.addEventListener('mouseleave', () => {
       clearInterval(scrollInterval);
