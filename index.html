@@ -129,7 +129,7 @@ const ACCOMMODATIONS = [
     }
   },
   {
-    id: 200, rank: 4,
+    id: 200, rank: 5,
     lat: 39.56, lng: -78.11,
     region: "Berkeley Springs 권역",
     name: "Cherry Run Chalet",
@@ -209,8 +209,8 @@ const ACCOMMODATIONS = [
       "images/cabin300_06.png"
     ],
     url: "https://www.airbnb.com/rooms/20965201?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
-    amenities: ["3BR/2.5BA", "식탁크기 8인", "파이어핏", "펫 프렌들리", "통나무 캐빈", "게임룸 (풋볼/에어하키/보드게임)", "풀키친", "강 접근 75야드 (여름 카약/튜빙)"],
-    criteria: { tennis: "no", dining: "yes", games: "yes", firepit: "yes", grill: "no", hottub: "no", sauna: "no", breakfast: "no", pet: "yes" },
+    amenities: ["3BR/2.5BA", "식탁크기 8인", "파이어핏", "그릴", "펫 프렌들리", "통나무 캐빈", "게임룸 (풋볼/에어하키/보드게임)", "풀키친", "강 접근 75야드 (여름 카약/튜빙)"],
+    criteria: { tennis: "no", dining: "yes", games: "yes", firepit: "yes", grill: "yes", hottub: "no", sauna: "no", breakfast: "no", pet: "yes" },
     review: {
       rating: "4.9 / 242개 리뷰",
       text: "아이와 강아지를 데리고 머물기에 완벽한 곳이었어요! 뒷마당이 넓고 강까지 바로 걸어갈 수 있어요. 아이들은 지하실 에어하키에 빠져 살았고, 파이어핏에서 스모어도 만들었습니다. 호스트도 정말 친절하고 응답이 빨라요!",
@@ -218,8 +218,8 @@ const ACCOMMODATIONS = [
       location: "Gaithersburg, MD",
       date: "2025년 12월"
     },
-    pros: ["식탁 8인 + 게임룸 (풋볼/에어하키/보드게임)", "파이어핏 + 강 접근 75야드 · 펫 프렌들리", "통나무 캐빈 분위기 · $857 합리적 가격"],
-    cons: ["그릴·핫텁·테니스 없음", "시설 다소 노후 · 4월엔 강 활동 제한"],
+    pros: ["식탁 8인 + 게임룸 (풋볼/에어하키/보드게임)", "파이어핏 + 그릴 + 강 접근 75야드 · 펫 프렌들리", "통나무 캐빈 분위기 · $857 합리적 가격"],
+    cons: ["핫텁·테니스 없음", "시설 다소 노후 · 4월엔 강 활동 제한"],
     summary: "뒷마당에 강(여름엔 카약), 게임룸 에어하키, 시설 다소 낡음",
     recommendation: "리뷰 242개 검증된 인기 캐빈",
     recIcon: "flame",
@@ -229,14 +229,14 @@ const ACCOMMODATIONS = [
       distance: "~1.5–2 hrs",
       specs: "8 Guests · 3BR · 2.5BA",
       priceNote: "$389/night × 2 + tax $80.05",
-      amenities: ["3BR/2.5BA", "8-Seat Dining", "Fire Pit", "Pet Friendly", "Log Cabin", "Game Room (Foosball/Air Hockey/Board Games)", "Full Kitchen", "River Access 75 yds (Summer Kayak/Tubing)"],
+      amenities: ["3BR/2.5BA", "8-Seat Dining", "Fire Pit", "Grill", "Pet Friendly", "Log Cabin", "Game Room (Foosball/Air Hockey/Board Games)", "Full Kitchen", "River Access 75 yds (Summer Kayak/Tubing)"],
       review: {
         rating: "4.9 / 242 Reviews",
         text: "Perfect for families with kids and dogs! Spacious backyard with direct river access. Kids were obsessed with the basement air hockey, and we made s'mores at the fire pit. Host was super friendly and responsive!",
         date: "Dec 2025"
       },
-      pros: ["8-seat dining + game room (foosball/air hockey/board games)", "Fire pit + river access 75 yds · Pet friendly", "Log cabin charm · Reasonable at $857"],
-      cons: ["No grill, hot tub, or tennis", "Somewhat dated · River activities limited in April"],
+      pros: ["8-seat dining + game room (foosball/air hockey/board games)", "Fire pit + grill + river access 75 yds · Pet friendly", "Log cabin charm · Reasonable at $857"],
+      cons: ["No hot tub or tennis", "Somewhat dated · River activities limited in April"],
       summary: "River in backyard (kayak in summer), air hockey game room, slightly dated",
       recommendation: "242 Reviews — Proven Popular"
     }
@@ -356,7 +356,7 @@ const ACCOMMODATIONS = [
     }
   },
   {
-    id: 700, rank: 5,
+    id: 700, rank: 4,
     lat: 38.75, lng: -78.64,
     region: "Shenandoah Valley",
     name: "Mountain Modern Home w/ Game Room, Fire Pit, Grill",
@@ -821,7 +821,6 @@ function initMap() {
     // 라벨을 마커 클러스터 위쪽에 배치
     const offsetLat = data.lats.length > 1 ? 0.12 : 0.10;
     const labelLat = Math.max(...data.lats) + offsetLat;
-    allPoints.push([labelLat, cLng]);
     L.marker([labelLat, cLng], {
       icon: L.divIcon({
         className: '',
@@ -833,8 +832,8 @@ function initMap() {
     }).addTo(map);
   });
 
-  // 모든 마커 + 권역 라벨이 보이도록 fitBounds
-  map.fitBounds(allPoints, { padding: [30, 30] });
+  // 모든 마커가 보이도록 fitBounds (상단 패딩 넉넉히 → 권역 라벨 포함)
+  map.fitBounds(allPoints, { paddingTopLeft: [30, 60], paddingBottomRight: [30, 30] });
 }
 
 function initCarousels() {
