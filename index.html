@@ -820,7 +820,9 @@ function initMap() {
     const color = regionColors[region] || '#94a3b8';
     // 라벨을 마커 클러스터 위쪽에 배치
     const offsetLat = data.lats.length > 1 ? 0.12 : 0.10;
-    L.marker([Math.max(...data.lats) + offsetLat, cLng], {
+    const labelLat = Math.max(...data.lats) + offsetLat;
+    allPoints.push([labelLat, cLng]);
+    L.marker([labelLat, cLng], {
       icon: L.divIcon({
         className: '',
         html: `<div style="white-space:nowrap;padding:3px 10px;border-radius:12px;background:${color}22;border:1.5px solid ${color}55;color:${color};font-size:11px;font-weight:600;font-family:Inter,sans-serif;letter-spacing:0.03em;backdrop-filter:blur(4px);text-align:center;">${label}</div>`,
@@ -831,8 +833,8 @@ function initMap() {
     }).addTo(map);
   });
 
-  // 집을 중앙에 놓고 모든 마커가 보이는 줌 레벨
-  map.setView([homeLat, homeLng], 8);
+  // 모든 마커 + 권역 라벨이 보이도록 fitBounds
+  map.fitBounds(allPoints, { padding: [30, 30] });
 }
 
 function initCarousels() {
