@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 봄방학 재민이 우진이 재윤이 숙소 비교</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Apple SD Gothic Neo', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    details summary { list-style: none; }
+    details summary::-webkit-details-marker { display: none; }
+    details[open] .chevron-icon { transform: rotate(180deg); }
+    .chevron-icon { transition: transform 0.2s ease; }
+    details[open] > .details-content {
+      animation: fadeSlideIn 0.2s ease;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card { transition: border-color 0.2s ease; }
+    .card:hover { border-color: rgba(255,255,255,0.12); }
+    .gallery-strip {
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .gallery-thumb {
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+    .gallery-thumb:hover {
+      border-color: rgba(255,255,255,0.6);
+      transform: scale(1.08);
+    }
+    .gallery-main-img {
+      transition: opacity 0.15s ease, transform 0.3s ease;
+    }
+    .gallery-carousel::-webkit-scrollbar { display: none; }
+    .gallery-carousel { scrollbar-width: none; }
+    .heart-icon { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.15s ease, fill 0.15s ease; }
+    .heart-btn:active .heart-icon { transform: scale(0.85); }
+  </style>
+</head>
+<body class="bg-black text-white font-sans min-h-screen">
+
+<div id="app"></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════╗
+// ║  숙소 데이터 — 옵션 추가/삭제는 이 배열만 수정하세요!        ║
+// ║                                                          ║
+// ║  recommendation: null 이면 '기타 옵션'으로 분류됩니다       ║
+// ║  criteria: "yes" | "partial" | "no"                      ║
+// ╚══════════════════════════════════════════════════════════╝
+const ACCOMMODATIONS = [
+  {
+    id: 100, rank: 4,
+    lat: 39.627, lng: -78.225,
+    name: "Pet-Friendly Cabin w/ Hot Tub + Firepit",
+    source: "Airbnb",
+    location: "Berkeley Springs, WV",
+    distance: "약 2시간",
+    miles: 115,
+    route: "I-270 → I-70",
+    priceLow: 885,
+    priceHigh: 885,
+    specs: "8인 · 침실3 · 화장실3",
+    priceNote: "$395/박 × 2 + 세금 $94.80",
+    image: "images/cabin100_04.png",
+    gallery: [
+      "images/cabin100_04.png",
+      "images/cabin100_06.png",
+      "images/cabin100_05.png",
+      "images/cabin100_02.png",
+      "images/cabin100_03.png",
+      "images/cabin100_01.png",
+      "images/cabin100_07.png"
+    ],
+    url: "https://www.airbnb.com/rooms/1091621448615450481?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
+    amenities: ["최대 8인", "3BR/3BA", "핫텁", "파이어핏", "BBQ 그릴", "고속 WiFi", "스마트TV", "반려동물 가능", "하이킹 근접", "커뮤니티 테니스코트"],
+    criteria: { tennis: "partial", cooking: "partial", games: "no", campfire: "yes", pet: "yes" },
+    review: {
+      rating: "4.99 / 68개 리뷰",
+      text: "아이와 강아지를 데리고 머물기에 완벽한 곳이었어요. 아늑하고 편안한 주말을 보냈습니다. 근처 Berkeley Springs 마을에서 맛있는 식사도 하고, 차로 10분 거리의 Cacapon State Park에서 하이킹도 즐겼어요.",
+      author: "Christy",
+      location: "Alexandria, VA",
+      date: "2026년 2월"
+    },
+    pros: ["4.99점 (68개 리뷰) 최고 평점", "DC/볼티모어에서 2시간", "핫텁 + 파이어핏 완비", "반려동물 동반 가능"],
+    cons: [],
+    summary: "핫텁에 몸 담그고 파이어핏에서 별 보는 온천마을 캐빈",
+    recommendation: "핫텁 + 파이어핏 캐빈",
+    recIcon: "flame",
+    searchTerms: ['Airbnb listing #1091621448615450481']
+  },
+  {
+    id: 200, rank: 3,
+    lat: 39.56, lng: -78.11,
+    name: "Cherry Run Chalet",
+    source: "Airbnb",
+    location: "Hedgesville, WV",
+    distance: "약 1.5시간",
+    miles: 95,
+    route: "I-81 North",
+    priceLow: 863,
+    priceHigh: 863,
+    specs: "8인 · 침실3 · 화장실2",
+    priceNote: "$388/박 × 2 + 세금 $87.36",
+    image: "images/chalet200_01.png",
+    gallery: [
+      "images/chalet200_01.png",
+      "images/chalet200_02.png",
+      "images/chalet200_03.png",
+      "images/chalet200_04.png",
+      "images/chalet200_05.png",
+      "images/chalet200_06.png",
+      "images/chalet200_07.png"
+    ],
+    url: "https://www.airbnb.com/rooms/564480643655147574?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
+    amenities: ["최대 8인", "3BR/4beds/2BA", "벽난로", "파이어핏", "데크/포치", "풀키친", "골프장 2개", "실내외 수영장", "핫텁", "테니스/피클볼", "헬스장", "반려동물 가능"],
+    criteria: { tennis: "yes", cooking: "yes", games: "partial", campfire: "yes", pet: "yes" },
+    review: {
+      rating: "5.0 / 102개 리뷰",
+      text: "주말에 두 가족이 함께 머물기에 완벽한 집이었어요! 아이들이 로프트에서 사촌들과 함께 자는 걸 좋아했고 수영장도 정말 즐겼어요. 주방에 필요한 모든 게 갖춰져 있었고, 깨끗하고 편안하고 잘 정돈되어 있었습니다.",
+      author: "Katie",
+      location: "Little Silver, NJ",
+      date: "2026년 1월"
+    },
+    pros: ["5.0 만점 (102개 리뷰) Guest Favorite", "The Woods 커뮤니티 (골프, 수영장, 테니스, 스파)", "벽난로 + 파이어핏 완비", "Superhost · 4월 1일 전 무료 취소"],
+    cons: ["3번째 방이 로프트 (오픈형)"],
+    summary: "수영장·테니스 패스 무료, 차 2분 리조트 커뮤니티",
+    recommendation: "만점 5.0 Guest Favorite",
+    recIcon: "gem",
+    searchTerms: ['Airbnb listing #564480643655147574']
+  },
+  {
+    id: 500, rank: 1,
+    lat: 39.55, lng: -78.12,
+    name: "Bear Pines Retreat ~ Game Room ~ Screened Porch",
+    source: "Airbnb",
+    location: "Hedgesville, WV (The Woods)",
+    distance: "약 1.5시간",
+    miles: 95,
+    route: "I-81 North",
+    priceLow: 835,
+    priceHigh: 835,
+    specs: "7인 · 침실3 · 화장실2",
+    priceNote: "$375/박 × 2 + 세금 $84.53 (할인가)",
+    image: "images/bear500_01.png",
+    gallery: [
+      "images/bear500_01.png",
+      "images/bear500_02.png",
+      "images/bear500_03.png",
+      "images/bear500_04.png",
+      "images/bear500_05.png",
+      "images/bear500_06.png",
+      "images/bear500_07.png",
+      "images/bear500_08.png"
+    ],
+    url: "https://www.airbnb.com/rooms/49607922?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
+    amenities: ["최대 7인", "3BR/6beds/2BA", "게임룸(탁구/당구/에어하키)", "스크린 포치", "파이어핏", "풀키친", "실내외 수영장", "핫텁", "테니스/피클볼", "헬스장", "반려동물 가능"],
+    criteria: { tennis: "yes", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
+    review: {
+      rating: "4.93 / 302개 리뷰",
+      text: "스크린 포치에서 아침 커피 마시며 자연을 즐기고, 게임룸에서 아이들이 탁구와 당구에 빠져 지루할 틈이 없었어요. 저녁에는 파이어핏에서 스모어를 만들며 가족 시간을 보냈습니다. 봄방학 가족 여행으로 완벽!",
+      author: "Samuel",
+      location: "Virginia",
+      date: "2025년 4월"
+    },
+    pros: ["4.93점 (302개 리뷰) Guest Favorite 최다 리뷰", "게임룸 + 스크린 포치", "The Woods 커뮤니티 시설 포함", "Superhost Lou · 3월 28일 전 무료 취소"],
+    cons: ["최대 7인 (8인 불가)", "Rare find - 인기 많아 빨리 마감"],
+    summary: "리뷰 302개 검증, 게임룸+스크린 포치, 리조트 커뮤니티",
+    recommendation: "리뷰 최다 302개",
+    recIcon: "flame",
+    searchTerms: ['Airbnb listing #49607922']
+  },
+  {
+    id: 300, rank: 6,
+    lat: 38.92, lng: -78.51,
+    name: "Cozy Log Cabin w/ Porch, Fire Pit, Games & River",
+    source: "Airbnb",
+    location: "Maurertown, VA (Shenandoah Valley)",
+    distance: "약 1.5–2시간",
+    miles: 100,
+    route: "I-66 West",
+    priceLow: 857,
+    priceHigh: 857,
+    specs: "8인 · 침실3 · 화장실2.5",
+    priceNote: "$389/박 × 2 + 세금 $80.05",
+    image: "images/cabin300_01.png",
+    gallery: [
+      "images/cabin300_01.png",
+      "images/cabin300_02.png",
+      "images/cabin300_03.png",
+      "images/cabin300_04.png",
+      "images/cabin300_05.png",
+      "images/cabin300_06.png"
+    ],
+    url: "https://www.airbnb.com/rooms/20965201?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
+    amenities: ["최대 8인", "3BR/2.5BA", "통나무 캐빈", "파이어핏", "포치", "풀키친", "풋볼/에어하키", "강 접근 (75야드)", "튜빙/카약", "반려동물 가능"],
+    criteria: { tennis: "no", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
+    review: {
+      rating: "4.9 / 242개 리뷰",
+      text: "아이와 강아지를 데리고 머물기에 완벽한 곳이었어요! 뒷마당이 넓고 강까지 바로 걸어갈 수 있어요. 아이들은 지하실 에어하키에 빠져 살았고, 파이어핏에서 스모어도 만들었습니다. 호스트도 정말 친절하고 응답이 빨라요!",
+      author: "Anita",
+      location: "Gaithersburg, MD",
+      date: "2025년 12월"
+    },
+    pros: ["4.9점 (242개 리뷰) Guest Favorite", "강 접근 + 파이어핏", "게임룸 (풋볼, 에어하키, 보드게임)", "반려동물 가능"],
+    cons: ["시설 다소 노후된 편", "테니스 시설 없음"],
+    summary: "뒷마당에 강(여름엔 카약), 게임룸 에어하키, 시설 다소 낡음",
+    recommendation: "리뷰 242개 검증된 인기 캐빈",
+    recIcon: "flame",
+    searchTerms: ['Airbnb listing #20965201']
+  },
+  {
+    id: 400, rank: 2,
+    lat: 38.48, lng: -78.26,
+    name: "10-Acre Dog-Friendly House w/ Grill & Near Wineries",
+    source: "Airbnb",
+    location: "Reva, VA (Shenandoah / Blue Ridge)",
+    distance: "약 1.5시간",
+    miles: 90,
+    route: "I-66 West → Rte 29",
+    priceLow: 731,
+    priceHigh: 731,
+    specs: "8인 · 침실3 · 화장실2",
+    priceNote: "$347/박 × 2 + 세금 $36.78 (할인가)",
+    image: "images/house400_01.png",
+    gallery: [
+      "images/house400_01.png",
+      "images/house400_02.png",
+      "images/house400_03.png",
+      "images/house400_04.png",
+      "images/house400_05.png",
+      "images/house400_06.png",
+      "images/house400_07.png"
+    ],
+    url: "https://www.airbnb.com/rooms/562877806093194888?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1&pets=1",
+    amenities: ["최대 8인", "3BR/5beds/2BA", "10에이커 부지", "파이어핏", "그릴", "풀키친", "보드게임", "포치", "와이너리 인접", "반려동물 가능"],
+    criteria: { tennis: "no", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
+    review: {
+      rating: "4.94 / 174개 리뷰",
+      text: "완벽한 휴양지였어요! 깨끗하고 세심하게 꾸며진 공간에 주방도 완벽하게 갖춰져 있었습니다. 야외 파이어핏에서 보낸 저녁이 최고였고, 호스트 Joy의 응대도 빠르고 친절했어요. 반려견을 위한 용품(침대, 간식, 그릇)까지 준비되어 있어 감동!",
+      author: "Kristi",
+      location: "Washington, DC",
+      date: "2025년 10월"
+    },
+    pros: ["4.94점 (174개 리뷰) Guest Favorite", "청결도 5.0 · 깨끗하고 세련된 인테리어", "10에이커 사유지 · 완벽한 프라이버시", "Superhost Joy · 반려견 용품 구비"],
+    cons: ["테니스 시설 없음", "위치가 다소 외진 편"],
+    summary: "청결 5.0 새집 느낌, 10에이커 독채에서 완벽한 프라이버시",
+    recommendation: "청결 5.0 · 가성비 최고 할인가",
+    recIcon: "sparkles",
+    searchTerms: ['Airbnb listing #562877806093194888']
+  },
+  {
+    id: 600, rank: 5,
+    lat: 38.82, lng: -78.33,
+    name: "The Wandering Caribou · Hot Tub · Sauna · Home Theater",
+    source: "Airbnb",
+    location: "Bentonville, VA (Shenandoah)",
+    distance: "약 1.5시간",
+    miles: 90,
+    route: "I-66 West → Rte 340",
+    priceLow: 905,
+    priceHigh: 905,
+    specs: "8인 · 침실3 · 화장실3",
+    priceNote: "$479/박 × 2 − 할인 $137 + 세금 $84.48",
+    image: "images/chalet600_02.png",
+    gallery: [
+      "images/chalet600_02.png",
+      "images/chalet600_07.png",
+      "images/chalet600_03.png",
+      "images/chalet600_05.png",
+      "images/chalet600_04.png",
+      "images/chalet600_06.png",
+      "images/chalet600_01.png"
+    ],
+    url: "https://www.airbnb.com/rooms/833692295458157348?adults=6&check_in=2026-04-02&check_out=2026-04-04&children=1",
+    amenities: ["최대 8인", "3BR/4beds/3BA", "사우나", "핫텁", "홈시어터", "게임룸(포커/아케이드)", "마사지체어", "파이어핏", "그릴", "풀키친", "마운틴뷰 데크", "반려동물 가능"],
+    criteria: { tennis: "no", cooking: "yes", games: "yes", campfire: "yes", pet: "yes" },
+    review: {
+      rating: "4.9 / 111개 리뷰",
+      text: "DC에서 가까운 완벽한 휴양지! 따뜻한 2월 날씨에 사우나, 마사지 체어, 비데까지 럭셔리 어메니티를 마음껏 즐겼어요. 3개 침실이 각 층에 분리되어 있어 프라이버시도 완벽. Amir 호스트가 얼리 체크인도 흔쾌히 허락해줬어요.",
+      author: "Mai",
+      location: "Fairfax, VA",
+      date: "2026년 3월"
+    },
+    pros: ["4.9점 (111개 리뷰) Guest Favorite", "사우나 + 핫텁 + 마사지체어 럭셔리 조합", "홈시어터 + 게임룸 (포커, 아케이드)", "Superhost Amir · 무료 취소"],
+    cons: ["식탁 6인석 (8인 수용 부족)", "셀 리셉션 없음 (WiFi만 가능)", "최고가 $905"],
+    summary: "사우나·홈시어터·마사지체어, 단 식탁 6인석",
+    recommendation: "사우나 + 홈시어터 유일",
+    recIcon: "sparkles",
+    searchTerms: ['Airbnb listing #833692295458157348']
+  },
+  {
+    id: 1, rank: 7,
+    lat: 38.38, lng: -78.83,
+    name: "Massanutten Resort 캐빈",
+    source: "TripForth / VRBO",
+    location: "McGaheysville, VA",
+    distance: "약 2시간",
+    miles: 120,
+    route: "I-66 → I-81",
+    priceLow: 250,
+    priceHigh: 400,
+    specs: "침실4 · 리조트",
+    priceNote: "4BR 기준 · 리조트 이용료 별도",
+    image: "images/massanutten.jpg",
+    url: "https://www.massresort.com/",
+    soldOut: true,
+    amenities: ["테니스코트", "실내수영장", "워터파크", "게임룸", "농구코트", "라켓볼", "풀키친", "세탁기", "핫텁(일부)", "파이어핏(일부)", "골프", "하이킹", "자전거"],
+    criteria: { tennis: "yes", cooking: "yes", games: "yes", campfire: "partial", pet: "no" },
+    pros: ["올인원 리조트로 활동 풍부", "테니스/축구/수영 모두 가능", "아이들 워터파크 즐길 수 있음", "리조트 내 안전한 환경"],
+    cons: ["리조트 이용료 추가 발생", "캐빈 자체는 소박할 수 있음"],
+    summary: "워터파크·테니스·게임룸 올인원, 아이들 천국 리조트",
+    recommendation: "활동 최우선",
+    recIcon: "trophy",
+    searchTerms: ['Airbnb → "Massanutten" 검색', 'VRBO → massanutten resort', 'tripforth.com/resort/massanutten']
+  },
+];
+
+// ── i18n ──
+let currentLang = 'ko';
+
+const I18N = {
+  ko: {
+    title1: '봄방학',
+    title2: '재민이 우진이 재윤이<br>숙소 비교',
+    subtitle: '4.2 – 4.4 &middot; 2박3일',
+    desc: 'Arlington, VA 출발 &middot; 어른 7명 &middot; 강아지 1마리',
+    tags: ['테니스', '요리', '보드게임', '캠프파이어', '펫 프렌들리'],
+    mapTitle: '위치 한눈에 보기',
+    mapSub: '집에서의 거리',
+    listTitle: '숙소 목록',
+    perNight: '/2박 총',
+    priceCheck: '가격 확인',
+    detail: '상세보기',
+    facility: '시설',
+    proLabel: '장점',
+    conLabel: '단점',
+    search: '검색',
+    viewLink: '숙소 상세 보기 →',
+    footer: '4월 초는 봄방학 시즌이므로 빠른 예약을 권장합니다. 가격은 숙소와 날짜에 따라 변동될 수 있습니다.',
+    home: '우리집',
+    criteria: { tennis: '테니스', cooking: '요리', games: '보드게임', campfire: '캠프파이어', pet: '펫 프렌들리' }
+  },
+  en: {
+    title1: 'Spring Break',
+    title2: 'Jaemin · Woojin · Jaeyoon<br>Accommodation Guide',
+    subtitle: 'Apr 2 – 4 &middot; 2 Nights',
+    desc: 'From Arlington, VA &middot; 7 Adults &middot; 1 Dog',
+    tags: ['Tennis', 'Cooking', 'Board Games', 'Campfire', 'Pet Friendly'],
+    mapTitle: 'Location Overview',
+    mapSub: 'Distance from home',
+    listTitle: 'Accommodations',
+    perNight: '/2 nights total',
+    priceCheck: 'Check price',
+    detail: 'Details',
+    facility: 'Amenities',
+    proLabel: 'Pros',
+    conLabel: 'Cons',
+    search: 'Search',
+    viewLink: 'View listing →',
+    footer: 'Early April is spring break season — book early. Prices may vary by listing and date.',
+    home: 'Home',
+    criteria: { tennis: 'Tennis', cooking: 'Cooking', games: 'Games', campfire: 'Campfire', pet: 'Pet Friendly' }
+  }
+};
+
+function t(key) { return I18N[currentLang][key]; }
+function getCriteriaMap() { return I18N[currentLang].criteria; }
+
+// ── 하트(좋아요) ──
+const LIKES_KEY = 'springbreak_likes';
+function getLikes() {
+  try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
+}
+function toggleLike(id) {
+  const likes = getLikes();
+  likes[id] = !likes[id];
+  localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
+  const btn = document.querySelector(`.heart-btn[data-id="${id}"]`);
+  const icon = btn.querySelector('.heart-icon');
+  const count = btn.querySelector('.heart-count');
+  if (likes[id]) {
+    icon.style.color = '#ef4444';
+    icon.style.fill = '#ef4444';
+    icon.style.transform = 'scale(1.3)';
+    setTimeout(() => icon.style.transform = 'scale(1)', 200);
+    count.textContent = '1';
+    count.style.opacity = '1';
+  } else {
+    icon.style.color = 'rgba(255,255,255,0.7)';
+    icon.style.fill = 'none';
+    count.textContent = '';
+    count.style.opacity = '0';
+  }
+}
+
+// ── 거리 색상 ──
+function distanceColor(miles) {
+  if (miles <= 100) return 'text-emerald-400';
+  if (miles <= 150) return 'text-white/50';
+  return 'text-orange-400/80';
+}
+
+// ── 조건 매치 도트 색상 ──
+function criteriaStyles(status) {
+  return {
+    yes:     { dot: 'bg-emerald-400', text: 'text-white/70' },
+    partial: { dot: 'bg-amber-400/70', text: 'text-white/40' },
+    no:      { dot: 'bg-white/[0.12]', text: 'text-white/20' }
+  }[status];
+}
+
+// ── 카드 렌더링 ──
+function renderCard(item) {
+  const badge = item.recommendation
+    ? `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/[0.08] text-amber-300 text-[11px] font-medium tracking-wide">
+         <i data-lucide="${item.recIcon}" class="w-3.5 h-3.5"></i>
+         ${item.recommendation}
+       </span>`
+    : '';
+
+  const cMap = getCriteriaMap();
+  const criteriaHTML = Object.entries(item.criteria).map(([key, status]) => {
+    const s = criteriaStyles(status);
+    return `<span class="flex items-center gap-1.5">
+      <span class="w-[5px] h-[5px] rounded-full ${s.dot}"></span>
+      <span class="${s.text}">${cMap[key]}</span>
+    </span>`;
+  }).join('');
+
+  const prosHTML = item.pros.map(p =>
+    `<li class="flex items-start gap-2 text-white/60 text-[13px] leading-relaxed">
+       <i data-lucide="check" class="w-3.5 h-3.5 mt-0.5 text-emerald-400/60 shrink-0"></i>${p}
+     </li>`
+  ).join('');
+
+  const consHTML = item.cons.map(c =>
+    `<li class="flex items-start gap-2 text-white/40 text-[13px] leading-relaxed">
+       <i data-lucide="minus" class="w-3.5 h-3.5 mt-0.5 text-orange-400/50 shrink-0"></i>${c}
+     </li>`
+  ).join('');
+
+  const amenityTags = item.amenities.map(a =>
+    `<span class="px-2 py-0.5 rounded-full bg-white/[0.04] text-white/40 text-[11px]">${a}</span>`
+  ).join('');
+
+  const searchHTML = item.searchTerms.map(s =>
+    `<li class="text-white/30 text-[11px]">${s}</li>`
+  ).join('');
+
+  const soldOutClass = item.soldOut ? 'opacity-50 grayscale' : '';
+
+  return `
+  <article class="card bg-[#111] border border-white/[0.06] rounded-[20px] overflow-hidden flex flex-col ${item.soldOut ? 'pointer-events-auto' : ''}">
+    <div class="relative group">
+      <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="block cursor-pointer">
+        <div class="aspect-[3/2] overflow-hidden bg-[#0a0a0a]">
+          <img src="${item.image}" alt="${item.name}" class="gallery-main-img w-full h-full object-cover transition-transform duration-300 ${item.soldOut ? 'grayscale opacity-40' : 'group-hover:scale-[1.03]'}" loading="lazy">
+        </div>
+        ${item.rank ? `<div class="absolute top-3 left-3 w-7 h-7 rounded-full ${item.rank === 1 ? 'bg-amber-400 text-black' : 'bg-white/20 text-white'} flex items-center justify-center text-[13px] font-bold z-20 backdrop-blur-sm">${item.rank}</div>` : ''}
+        ${!item.soldOut ? (() => { const likes = getLikes(); const liked = likes[item.id]; return `
+        <button class="heart-btn absolute top-3 right-3 z-20 flex items-center gap-1 cursor-pointer bg-black/30 backdrop-blur-sm rounded-full px-2 py-1.5 hover:bg-black/50 transition-colors" data-id="${item.id}" onclick="event.preventDefault();event.stopPropagation();toggleLike(${item.id})">
+          <svg class="heart-icon w-5 h-5 transition-all duration-200" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:${liked ? '#ef4444' : 'rgba(255,255,255,0.7)'};fill:${liked ? '#ef4444' : 'none'};filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <span class="heart-count text-white text-[12px] font-semibold" style="opacity:${liked ? '1' : '0'}">${liked ? '1' : ''}</span>
+        </button>`; })() : ''}
+        ${item.soldOut ? `
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="px-5 py-2 rounded-full bg-red-500/90 text-white text-[13px] font-bold tracking-widest uppercase">FULL BOOKED</span>
+        </div>` : `
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>`}
+      </a>
+      ${item.gallery && item.gallery.length > 1 && !item.soldOut ? `
+      <div class="gallery-strip absolute bottom-0 left-0 right-0 z-10">
+        <div class="gallery-carousel flex gap-1.5 px-2 pb-2 overflow-x-auto" style="scrollbar-width:none;-webkit-overflow-scrolling:touch;" data-card-id="${item.id}">
+          ${item.gallery.map((img, i) => `
+            <div class="gallery-thumb w-14 h-14 rounded-lg overflow-hidden bg-black/50 backdrop-blur-sm cursor-pointer shrink-0 ring-1 ring-white/10" data-gallery-idx="${i}" data-card-id="${item.id}">
+              <img src="${img}" alt="" class="w-full h-full object-cover" loading="lazy">
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+    </div>
+
+    <div class="p-5 flex flex-col flex-1 ${item.soldOut ? 'opacity-50' : ''}">
+      ${badge ? `<div class="mb-2">${badge}</div>` : ''}
+
+      <div class="mb-1.5">
+        <h3 class="text-white text-[16px] font-semibold leading-tight mb-1">${item.name}</h3>
+        <div class="flex items-center gap-1.5 text-[12px]">
+          <i data-lucide="map-pin" class="w-3 h-3 text-white/30 shrink-0"></i>
+          <span class="text-white/40">${item.location}</span>
+          <span class="text-white/15 mx-0.5">/</span>
+          <span class="${distanceColor(item.miles)}">${item.distance}</span>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-white text-[22px] font-bold tracking-tight">${item.priceLow ? (item.priceLow === item.priceHigh ? `$${item.priceLow}` : `$${item.priceLow}–${item.priceHigh}`) : t('priceCheck')}</span>
+          <span class="text-white/30 text-[12px]">${item.priceLow ? t('perNight') : ''}</span>
+          ${item.specs ? `<span class="text-white/20 text-[12px]">|</span><span class="text-white/40 text-[11px]">${item.specs}</span>` : ''}
+        </div>
+        <p class="text-white/25 text-[11px]">${item.priceNote}</p>
+      </div>
+
+      <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] mb-2">
+        ${criteriaHTML}
+      </div>
+
+      <p class="text-white/50 text-[12px] leading-snug mb-3 mt-auto">${item.summary}</p>
+
+      ${item.review ? `
+      <div class="mb-3 px-3 py-2.5 rounded-[12px] bg-white/[0.03] border border-white/[0.06]">
+        <div class="flex items-center gap-1 mb-1.5">
+          <div class="flex items-center gap-0.5">
+            ${[1,2,3,4,5].map(() => '<i data-lucide="star" class="w-2.5 h-2.5 text-amber-400 fill-amber-400"></i>').join('')}
+          </div>
+          <span class="text-amber-300 text-[11px] font-semibold">${item.review.rating}</span>
+        </div>
+        <p class="text-white/50 text-[11px] leading-snug italic mb-1.5">"${item.review.text}"</p>
+        <p class="text-white/30 text-[10px]">${item.review.author} · ${item.review.location} · ${item.review.date}</p>
+      </div>` : ''}
+
+      <details>
+        <summary class="flex items-center gap-1 text-white/25 text-[12px] cursor-pointer hover:text-white/40 transition-colors select-none py-1">
+          <span>${t('detail')}</span>
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5 chevron-icon"></i>
+        </summary>
+        <div class="details-content mt-4 pt-4 border-t border-white/[0.06] space-y-5">
+          <div>
+            <p class="text-white/25 text-[10px] uppercase tracking-[0.1em] mb-2">${t('facility')}</p>
+            <div class="flex flex-wrap gap-1.5">${amenityTags}</div>
+          </div>
+          <div>
+            <p class="text-white/25 text-[10px] uppercase tracking-[0.1em] mb-2">${t('proLabel')}</p>
+            <ul class="space-y-1.5">${prosHTML}</ul>
+          </div>
+          <div>
+            <p class="text-white/25 text-[10px] uppercase tracking-[0.1em] mb-2">${t('conLabel')}</p>
+            <ul class="space-y-1.5">${consHTML}</ul>
+          </div>
+          <div>
+            <p class="text-white/25 text-[10px] uppercase tracking-[0.1em] mb-2">${t('search')}</p>
+            <ul class="space-y-1">${searchHTML}</ul>
+          </div>
+          <p class="text-white/15 text-[11px]">${item.route}</p>
+          <a href="${item.url}" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-[12px] border border-white/[0.1] text-white/70 text-[12px] hover:bg-white/[0.05] hover:text-white/90 transition-colors cursor-pointer">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            ${t('viewLink')}
+          </a>
+        </div>
+      </details>
+    </div>
+  </article>`;
+}
+
+// ── 언어 토글 ──
+function toggleLang() {
+  currentLang = currentLang === 'ko' ? 'en' : 'ko';
+  renderApp();
+  initMap();
+  initCarousels();
+  initGalleryClicks();
+}
+
+// ── 전체 렌더링 ──
+function renderApp() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="max-w-[1600px] mx-auto px-5 md:px-8">
+
+      <!-- Lang Toggle -->
+      <div class="fixed top-5 right-5 z-50">
+        <button id="langToggle" onclick="toggleLang()" class="px-4 py-2 rounded-full bg-white/10 backdrop-blur-md text-white/70 text-[13px] font-medium hover:bg-white/20 transition-colors border border-white/10">
+          ${currentLang === 'ko' ? 'English' : '한국어'}
+        </button>
+      </div>
+
+      <!-- Hero + Map -->
+      <header class="pt-20 md:pt-28 pb-8">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:gap-10">
+          <!-- 왼쪽: 타이틀 -->
+          <div class="flex-1 min-w-0">
+            <p class="text-white/30 text-[13px] tracking-[0.15em] uppercase mb-5">${t('subtitle')}</p>
+            <h1 class="text-[44px] md:text-[64px] font-bold text-white leading-[1.05] tracking-tight mb-6">${t('title1')}<br>${t('title2')}</h1>
+            <p class="text-white/35 text-[15px] mb-6">${t('desc')}</p>
+            <div class="flex flex-wrap gap-2 mb-8 lg:mb-0">
+              ${t('tags').map(c =>
+                `<span class="px-3.5 py-1.5 rounded-full bg-white/[0.06] text-white/50 text-[12px]">${c}</span>`
+              ).join('')}
+            </div>
+          </div>
+          <!-- 오른쪽: 지도 -->
+          <div class="lg:flex-1 lg:min-w-[55%] shrink-0">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-white/40 text-[12px] font-medium">${t('mapTitle')}</span>
+              <span class="text-white/20 text-[11px]">${t('mapSub')}</span>
+            </div>
+            <div id="map" style="height:380px;border-radius:16px;z-index:0;"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 숙소 목록 -->
+      <section class="pt-8 pb-4">
+        <div class="flex items-center gap-3 mb-8">
+          <h2 class="text-white/80 text-[15px] font-semibold tracking-wide">${t('listTitle')}</h2>
+          <span class="text-white/25 text-[12px]">${ACCOMMODATIONS.length}개</span>
+          <div class="flex-1 h-px bg-white/[0.06]"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          ${ACCOMMODATIONS.sort((a,b) => a.rank - b.rank).map(renderCard).join('')}
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="pt-12 pb-20">
+        <div class="flex items-start gap-2.5 px-5 py-4 rounded-[16px] bg-white/[0.03] border border-white/[0.06]">
+          <i data-lucide="info" class="w-4 h-4 text-white/25 shrink-0 mt-0.5"></i>
+          <p class="text-white/30 text-[13px] leading-relaxed">${t('footer')}</p>
+        </div>
+      </footer>
+
+    </div>
+  `;
+
+  lucide.createIcons();
+  initMap();
+  initCarousels();
+  initGalleryClicks();
+}
+
+function initMap() {
+  const mapEl = document.getElementById('map');
+  if (!mapEl) return;
+  mapEl.innerHTML = '';
+  mapEl._leaflet_id = null;
+
+  const map = L.map('map', { scrollWheelZoom: false }).setView([38.85, -77.95], 8);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19
+  }).addTo(map);
+
+  L.marker([38.88, -77.10], {
+    icon: L.divIcon({
+      className: '',
+      html: '<div style="width:32px;height:32px;border-radius:50%;background:#3b82f6;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,0.3);">🏠</div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 16]
+    })
+  }).addTo(map).bindPopup(`<b>${t('home')}</b><br>Arlington, VA`);
+
+  ACCOMMODATIONS.filter(a => a.lat && a.lng).forEach(a => {
+    const bg = a.rank === 1 ? '#f59e0b' : '#ef4444';
+    const textColor = a.rank === 1 ? '#000' : '#fff';
+    L.marker([a.lat, a.lng], {
+      icon: L.divIcon({
+        className: '',
+        html: `<div style="width:34px;height:34px;border-radius:50%;background:${bg};color:${textColor};font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.35);">${a.rank}</div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      })
+    }).addTo(map).bindPopup(`<b>${a.rank}. ${a.name}</b><br>${a.location}<br>${a.distance} · $${a.priceLow}`);
+  });
+}
+
+function initCarousels() {
+  document.querySelectorAll('.gallery-carousel').forEach(carousel => {
+    const items = carousel.innerHTML;
+    carousel.innerHTML = items + items;
+    let scrollInterval;
+    const card = carousel.closest('.group');
+    card.addEventListener('mouseenter', () => {
+      scrollInterval = setInterval(() => {
+        carousel.scrollLeft += 1;
+        if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
+          carousel.scrollLeft = 0;
+        }
+      }, 25);
+    });
+    card.addEventListener('mouseleave', () => {
+      clearInterval(scrollInterval);
+      carousel.scrollLeft = 0;
+    });
+  });
+}
+
+function initGalleryClicks() {
+  document.querySelectorAll('.gallery-thumb').forEach(thumb => {
+    thumb.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = thumb.closest('article');
+      const mainImg = card.querySelector('.gallery-main-img');
+      const src = thumb.querySelector('img').src;
+      mainImg.style.opacity = '0';
+      setTimeout(() => {
+        mainImg.src = src;
+        mainImg.style.opacity = '1';
+      }, 150);
+    });
+  });
+}
+
+renderApp();
+</script>
+</body>
+</html>
