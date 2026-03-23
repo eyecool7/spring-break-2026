@@ -832,8 +832,8 @@ function initMap() {
     }).addTo(map);
   });
 
-  // 모든 마커가 보이도록 fitBounds (상단 패딩 넉넉히 → 권역 라벨 포함)
-  map.fitBounds(allPoints, { paddingTopLeft: [30, 60], paddingBottomRight: [30, 30] });
+  // 집 중심, 줌 7로 모든 마커 + 권역 라벨 표시
+  map.setView([homeLat, homeLng], 7);
 }
 
 function initCarousels() {
