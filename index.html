@@ -55,8 +55,7 @@
     .gallery-main-img {
       transition: opacity 0.15s ease, transform 0.3s ease;
     }
-    .gallery-carousel::-webkit-scrollbar { display: none; }
-    .gallery-carousel { scrollbar-width: none; }
+    .gallery-arrow { cursor: pointer; }
   </style>
 </head>
 <body class="bg-black text-white font-sans min-h-screen">
@@ -593,14 +592,15 @@ function renderCard(item) {
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>`}
       </a>
       ${item.gallery && item.gallery.length > 1 && !item.soldOut ? `
-      <div class="gallery-strip absolute bottom-0 left-0 right-0 z-10">
-        <div class="gallery-carousel flex gap-1.5 px-2 pb-2 overflow-x-auto" style="scrollbar-width:none;-webkit-overflow-scrolling:touch;" data-card-id="${item.id}">
-          ${item.gallery.map((img, i) => `
-            <div class="gallery-thumb w-14 h-14 rounded-lg overflow-hidden bg-black/50 backdrop-blur-sm cursor-pointer shrink-0 ring-1 ring-white/10" data-gallery-idx="${i}" data-card-id="${item.id}">
-              <img src="${img}" alt="" class="w-full h-full object-cover" loading="lazy">
-            </div>
-          `).join('')}
-        </div>
+      <button class="gallery-arrow gallery-prev absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80" data-card-id="${item.id}" data-dir="-1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="gallery-arrow gallery-next absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80" data-card-id="${item.id}" data-dir="1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="gallery-counter absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white/80 text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity" data-card-id="${item.id}">1 / ${item.gallery.length}</div>
+      <div class="gallery-dots absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1 opacity-0 group-hover:opacity-0 transition-opacity" data-card-id="${item.id}">
+        ${item.gallery.map((_, i) => `<span class="w-1.5 h-1.5 rounded-full ${i === 0 ? 'bg-white' : 'bg-white/40'}"></span>`).join('')}
       </div>` : ''}
     </div>
 
@@ -763,7 +763,7 @@ function initMap() {
   mapEl.innerHTML = '';
   mapEl._leaflet_id = null;
 
-  const map = L.map('map', { scrollWheelZoom: false, center: [38.88, -77.10], zoom: 8 });
+  const map = L.map('map', { scrollWheelZoom: false });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -832,46 +832,53 @@ function initMap() {
     }).addTo(map);
   });
 
-  // 줌 8로 리셋 (권역 라벨 포함되도록)
-  map.setView([38.88, -77.10], 8);
+  // 모든 포인트가 보이도록 fitBounds 사용
+  setTimeout(() => {
+    map.invalidateSize();
+    map.fitBounds(allPoints, { padding: [35, 35] });
+  }, 200);
 }
 
 function initCarousels() {
-  document.querySelectorAll('.gallery-carousel').forEach(carousel => {
-    const items = carousel.innerHTML;
-    carousel.innerHTML = items + items;
-    let scrollInterval;
-    const card = carousel.closest('.group');
-    card.addEventListener('mouseenter', () => {
-      scrollInterval = setInterval(() => {
-        carousel.scrollLeft += 1;
-        if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
-          carousel.scrollLeft = 0;
-        }
-      }, 50);
-    });
-    card.addEventListener('mouseleave', () => {
-      clearInterval(scrollInterval);
-      carousel.scrollLeft = 0;
+  // 화살표 갤러리 네비게이션
+  const galleryState = {};
+
+  document.querySelectorAll('.gallery-arrow').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const cardId = btn.dataset.cardId;
+      const dir = parseInt(btn.dataset.dir);
+      const card = btn.closest('article');
+      const mainImg = card.querySelector('.gallery-main-img');
+      const acc = ACCOMMODATIONS.find(a => a.id == cardId);
+      if (!acc || !acc.gallery) return;
+
+      if (!galleryState[cardId]) galleryState[cardId] = 0;
+      galleryState[cardId] = (galleryState[cardId] + dir + acc.gallery.length) % acc.gallery.length;
+      const idx = galleryState[cardId];
+
+      mainImg.style.opacity = '0';
+      setTimeout(() => {
+        mainImg.src = acc.gallery[idx];
+        mainImg.style.opacity = '1';
+      }, 120);
+
+      // 카운터 업데이트
+      const counter = card.querySelector('.gallery-counter');
+      if (counter) counter.textContent = `${idx + 1} / ${acc.gallery.length}`;
+
+      // 닷 업데이트
+      const dots = card.querySelectorAll('.gallery-dots span');
+      dots.forEach((d, i) => {
+        d.className = `w-1.5 h-1.5 rounded-full ${i === idx ? 'bg-white' : 'bg-white/40'}`;
+      });
     });
   });
 }
 
 function initGalleryClicks() {
-  document.querySelectorAll('.gallery-thumb').forEach(thumb => {
-    thumb.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const card = thumb.closest('article');
-      const mainImg = card.querySelector('.gallery-main-img');
-      const src = thumb.querySelector('img').src;
-      mainImg.style.opacity = '0';
-      setTimeout(() => {
-        mainImg.src = src;
-        mainImg.style.opacity = '1';
-      }, 150);
-    });
-  });
+  // 더 이상 썸네일 클릭 없음 — 화살표로 대체
 }
 
 renderApp();
